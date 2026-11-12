@@ -1,0 +1,1356 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>搭把手 · 校园跑腿互助平台</title>
+<style>
+:root{
+  --bg:#F6F5F1;
+  --surface:#FFFFFF;
+  --ink:#16211C;
+  --ink-2:#5C6660;
+  --ink-3:#8A938E;
+  --line:#E4E2DA;
+  --brand:#0F6B57;
+  --brand-2:#0B5344;
+  --brand-soft:#E3F0EB;
+  --accent:#EE6C4D;
+  --accent-soft:#FCEAE4;
+  --gold:#C9922B;
+  --gold-soft:#FBF0DA;
+  --radius:16px;
+  --shadow:0 1px 2px rgba(22,33,28,.04), 0 10px 28px -14px rgba(22,33,28,.22);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",sans-serif;
+  font-size:15px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4{margin:0;font-weight:700;letter-spacing:-.01em;}
+p{margin:0;}
+button{font-family:inherit;}
+a{color:inherit;}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:rgba(246,245,241,.9);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-inner{
+  max-width:1200px;margin:0 auto;padding:0 24px;height:64px;
+  display:flex;align-items:center;gap:20px;
+}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
+.brand-mark{width:32px;height:32px;border-radius:10px;background:var(--brand);display:grid;place-items:center;}
+.brand-mark svg{width:18px;height:18px;}
+.brand-text{display:flex;flex-direction:column;line-height:1.15;}
+.brand-name{font-weight:800;font-size:16px;letter-spacing:.02em;}
+.brand-sub{font-size:11px;color:var(--ink-3);font-weight:500;}
+.nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-btn{
+  border:0;background:transparent;font-size:14px;color:var(--ink-2);
+  padding:8px 14px;border-radius:999px;cursor:pointer;white-space:nowrap;
+  transition:background .18s ease,color .18s ease;
+}
+.nav-btn:hover{background:#EDEBE4;color:var(--ink);}
+.nav-btn.is-active{background:var(--brand);color:#fff;}
+.nav-btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px;}
+.me-pill{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-weight:700;font-size:13px;}
+.me-meta{display:flex;flex-direction:column;line-height:1.2;}
+.me-meta b{font-size:13px;}
+.me-meta i{font-size:11px;color:var(--ink-3);font-style:normal;}
+
+/* ---------- layout ---------- */
+main{max-width:1200px;margin:0 auto;padding:32px 24px 88px;}
+.view[hidden]{display:none;}
+.page-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px;}
+h1{font-size:30px;line-height:1.25;margin-bottom:8px;}
+h2{font-size:24px;margin-bottom:8px;}
+h3{font-size:17px;margin-bottom:12px;}
+.lede{color:var(--ink-2);max-width:52ch;font-size:14.5px;}
+.stat-row{display:flex;gap:10px;flex-wrap:wrap;}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 18px;min-width:100px;}
+.stat b{display:block;font-size:20px;color:var(--brand);line-height:1.3;}
+.stat span{font-size:11.5px;color:var(--ink-3);}
+
+/* ---------- square ---------- */
+.square-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:start;}
+.filter-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:20px;}
+.search{position:relative;flex:1 1 200px;min-width:170px;}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--ink-3);}
+.search input{
+  width:100%;height:40px;border:1px solid var(--line);border-radius:12px;
+  background:var(--surface);padding:0 12px 0 35px;font-size:14px;color:var(--ink);font-family:inherit;
+}
+.search input::placeholder{color:var(--ink-3);}
+.search input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(15,107,87,.12);}
+.chips{display:flex;gap:6px;flex-wrap:wrap;}
+.chip{
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-2);
+  font-size:13px;padding:7px 14px;border-radius:999px;cursor:pointer;
+  transition:background .18s ease,color .18s ease,border-color .18s ease;
+}
+.chip:hover{border-color:#CFCCC2;}
+.chip.is-active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.chip:focus-visible{outline:2px solid var(--brand);outline-offset:2px;}
+select{
+  height:40px;border:1px solid var(--line);border-radius:12px;background:var(--surface);
+  font-size:13px;padding:0 10px;color:var(--ink-2);font-family:inherit;cursor:pointer;
+}
+select:focus{outline:none;border-color:var(--brand);}
+
+.task-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:16px;}
+.task-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px;display:flex;flex-direction:column;gap:10px;cursor:pointer;
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+  text-align:left;
+}
+.task-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:#D8D5CB;}
+.task-card:focus-visible{outline:2px solid var(--brand);outline-offset:2px;}
+.task-top{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.type-chip{font-size:12px;font-weight:600;padding:3px 9px;border-radius:7px;}
+.urgent{font-size:11px;color:var(--accent);background:var(--accent-soft);padding:3px 7px;border-radius:6px;font-weight:700;}
+.pay{margin-left:auto;font-size:17px;font-weight:800;color:var(--brand);}
+.task-title{font-size:15.5px;line-height:1.45;font-weight:600;margin:0;}
+.route{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-2);min-width:0;}
+.route-point{display:flex;align-items:center;gap:6px;min-width:0;flex:1 1 0;}
+.route-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dot-a{background:#B9B5A9;}
+.dot-b{background:var(--brand);}
+.route-arrow{width:20px;height:8px;flex-shrink:0;stroke:var(--ink-3);fill:none;stroke-width:1.5;}
+.task-foot{
+  display:flex;align-items:center;gap:10px;padding-top:10px;
+  border-top:1px dashed var(--line);font-size:12px;color:var(--ink-3);flex-wrap:wrap;
+}
+.who{display:flex;align-items:center;gap:6px;color:var(--ink-2);}
+.avatar-sm{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:700;color:#fff;font-style:normal;flex-shrink:0;}
+.deadline{margin-left:auto;white-space:nowrap;}
+.badge{font-size:11px;padding:3px 8px;border-radius:6px;font-weight:600;}
+.badge-open{background:#EDF7F3;color:var(--brand);}
+.badge-taken{background:var(--gold-soft);color:#9A6F14;}
+.badge-done{background:#EFEFEA;color:var(--ink-3);}
+.empty{padding:40px 0;text-align:center;color:var(--ink-3);font-size:14px;}
+
+/* ---------- side ---------- */
+.square-side{display:flex;flex-direction:column;gap:16px;position:sticky;top:88px;}
+.side-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;}
+.side-card h3{font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+.rank{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px;}
+.rank:last-child{border-bottom:0;padding-bottom:0;}
+.rank-no{width:20px;font-weight:800;color:var(--ink-3);font-size:12px;}
+.rank-no.top{color:var(--gold);}
+.rank-name{flex:1;color:var(--ink-2);}
+.rank-val{font-weight:700;color:var(--brand);font-size:12.5px;}
+.side-note{font-size:12.5px;color:var(--ink-2);line-height:1.65;}
+.side-note li{margin-bottom:6px;}
+.side-note ul{margin:0;padding-left:16px;}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  height:40px;padding:0 18px;border-radius:11px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);font-size:14px;font-weight:600;cursor:pointer;
+  transition:background .18s ease,border-color .18s ease,transform .12s ease;
+}
+.btn:hover{background:#F1EFE9;border-color:#D5D2C8;}
+.btn:active{transform:scale(.98);}
+.btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px;}
+.btn-primary{background:var(--brand);border-color:var(--brand);color:#fff;}
+.btn-primary:hover{background:var(--brand-2);border-color:var(--brand-2);}
+.btn-ghost{background:transparent;}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-sm{height:32px;padding:0 12px;font-size:12.5px;border-radius:9px;}
+.btn-block{width:100%;}
+
+/* ---------- publish ---------- */
+.publish-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:start;}
+.form-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px;}
+.field{margin-bottom:20px;}
+.field:last-child{margin-bottom:0;}
+.label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;}
+.label span{font-weight:400;color:var(--ink-3);font-size:12px;margin-left:4px;}
+.input,.textarea{
+  width:100%;border:1px solid var(--line);border-radius:11px;background:var(--surface);
+  padding:10px 13px;font-size:14px;color:var(--ink);font-family:inherit;
+}
+.input{height:42px;}
+.textarea{min-height:88px;resize:vertical;line-height:1.6;}
+.input:focus,.textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(15,107,87,.12);}
+.input::placeholder,.textarea::placeholder{color:var(--ink-3);}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.radio-chips{display:flex;gap:8px;flex-wrap:wrap;}
+.radio-chips label{cursor:pointer;}
+.radio-chips input{position:absolute;opacity:0;width:1px;height:1px;}
+.radio-chips span{
+  display:inline-block;padding:8px 16px;border:1px solid var(--line);border-radius:999px;
+  font-size:13px;color:var(--ink-2);transition:all .18s ease;background:var(--surface);
+}
+.radio-chips input:checked + span{background:var(--brand-soft);border-color:var(--brand);color:var(--brand-2);font-weight:600;}
+.radio-chips input:focus-visible + span{outline:2px solid var(--brand);outline-offset:2px;}
+.check-line{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink-2);cursor:pointer;}
+.check-line input{width:16px;height:16px;accent-color:var(--brand);}
+.form-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:24px;padding-top:20px;border-top:1px solid var(--line);flex-wrap:wrap;}
+.form-hint{font-size:12.5px;color:var(--ink-3);}
+.tip-card{background:var(--brand-soft);border:1px solid #CDE5DC;border-radius:var(--radius);padding:18px;}
+.tip-card h3{font-size:14px;color:var(--brand-2);margin-bottom:10px;}
+.tip-card ol{margin:0;padding-left:18px;font-size:12.5px;color:#2C5A4D;line-height:1.75;}
+
+/* ---------- orders ---------- */
+.tabs{display:flex;gap:6px;margin-bottom:20px;border-bottom:1px solid var(--line);padding-bottom:0;}
+.tab{
+  border:0;background:transparent;font-size:14px;color:var(--ink-2);padding:10px 16px;
+  cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:600;
+}
+.tab.is-active{color:var(--brand);border-bottom-color:var(--brand);}
+.tab span{font-size:11.5px;background:#EDEBE4;color:var(--ink-2);padding:1px 6px;border-radius:6px;margin-left:4px;}
+.tab.is-active span{background:var(--brand-soft);color:var(--brand);}
+.order-list{display:flex;flex-direction:column;gap:14px;}
+.order-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;}
+.order-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.order-card h3{font-size:15.5px;margin-bottom:10px;font-weight:600;}
+.order-foot{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);flex-wrap:wrap;}
+.order-foot .who{font-size:12.5px;}
+.actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+.steps{display:flex;align-items:center;gap:0;margin-top:14px;flex-wrap:wrap;}
+.step{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-3);}
+.step i{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:9px;font-style:normal;background:var(--surface);}
+.step.on{color:var(--brand);font-weight:600;}
+.step.on i{background:var(--brand);border-color:var(--brand);color:#fff;}
+.step-line{width:24px;height:1px;background:var(--line);margin:0 6px;}
+
+/* ---------- credit ---------- */
+.credit-hero{
+  background:linear-gradient(135deg,#0F6B57,#0B5344 70%);
+  border-radius:20px;padding:28px;color:#fff;
+  display:flex;flex-wrap:wrap;align-items:center;gap:32px;margin-bottom:24px;
+}
+.credit-score{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+.score-num{font-size:56px;font-weight:800;line-height:1;letter-spacing:-.03em;}
+.score-label{font-size:13px;opacity:.75;}
+.credit-level{display:inline-block;background:rgba(255,255,255,.16);padding:5px 12px;border-radius:999px;font-size:12.5px;font-weight:600;margin-left:4px;}
+.credit-bar-wrap{flex:1;min-width:220px;}
+.credit-bar-top{display:flex;justify-content:space-between;font-size:12px;opacity:.8;margin-bottom:8px;}
+.credit-bar{height:8px;border-radius:999px;background:rgba(255,255,255,.18);overflow:hidden;}
+.credit-bar i{display:block;height:100%;border-radius:999px;background:#7FE3C4;width:80%;}
+.credit-bar-hint{font-size:12px;opacity:.75;margin-top:8px;}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:32px;}
+.metric{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;}
+.metric b{display:block;font-size:24px;color:var(--ink);line-height:1.25;}
+.metric span{font-size:12px;color:var(--ink-3);}
+.medals{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:32px;}
+.medal{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:10px;align-items:center;}
+.medal-ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex-shrink:0;}
+.medal b{font-size:13px;display:block;line-height:1.3;}
+.medal span{font-size:11px;color:var(--ink-3);}
+.medal.locked{opacity:.45;}
+.reviews{display:flex;flex-direction:column;gap:10px;margin-bottom:32px;}
+.review{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;gap:12px;}
+.review-body{flex:1;min-width:0;}
+.review-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;}
+.review-top b{font-size:13px;}
+.review-top .score{font-size:12px;color:var(--gold);font-weight:700;}
+.review p{font-size:13px;color:var(--ink-2);}
+.review time{font-size:11px;color:var(--ink-3);margin-left:auto;}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:420px;}
+caption{text-align:left;padding:14px 16px 0;font-size:12.5px;color:var(--ink-3);}
+th,td{padding:11px 16px;text-align:left;border-bottom:1px solid var(--line);}
+th{font-size:12px;color:var(--ink-3);font-weight:600;background:#FAF9F5;}
+tr:last-child td{border-bottom:0;}
+td.num{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.plus{color:var(--brand);}
+.minus{color:var(--accent);}
+
+/* ---------- about ---------- */
+.about-sec{margin-bottom:40px;}
+.pain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;}
+.pain{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;}
+.pain h4{font-size:14px;margin-bottom:6px;}
+.pain p{font-size:13px;color:var(--ink-2);line-height:1.65;}
+.pain-sol{display:inline-block;margin-top:10px;font-size:12.5px;color:var(--brand);font-weight:600;background:var(--brand-soft);padding:4px 10px;border-radius:7px;}
+.flow{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;}
+.flow li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:3px;}
+.flow-num{width:22px;height:22px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:11.5px;font-weight:800;margin-bottom:7px;}
+.flow li b{font-size:14px;}
+.flow-desc{font-size:12.5px;color:var(--ink-2);line-height:1.55;}
+.mech-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;}
+.mech{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;gap:12px;}
+.mech-ico{width:36px;height:36px;border-radius:11px;background:var(--brand-soft);display:grid;place-items:center;flex-shrink:0;}
+.mech b{font-size:14px;display:block;margin-bottom:4px;}
+.mech p{font-size:12.5px;color:var(--ink-2);line-height:1.6;}
+.two-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;}
+.panel ul{margin:0;padding-left:18px;font-size:13px;color:var(--ink-2);line-height:1.9;}
+.panel li b{color:var(--ink);}
+.roadmap{display:flex;flex-direction:column;gap:0;}
+.rm-item{display:flex;gap:16px;padding-bottom:20px;position:relative;}
+.rm-item:last-child{padding-bottom:0;}
+.rm-item::before{content:"";position:absolute;left:5px;top:16px;bottom:0;width:1px;background:var(--line);}
+.rm-item:last-child::before{display:none;}
+.rm-dot{width:11px;height:11px;border-radius:50%;background:var(--line);margin-top:6px;flex-shrink:0;position:relative;z-index:1;}
+.rm-item.now .rm-dot{background:var(--brand);box-shadow:0 0 0 4px var(--brand-soft);}
+.rm-body b{font-size:14px;display:block;}
+.rm-body span{font-size:12.5px;color:var(--ink-2);}
+.rm-tag{font-size:11px;background:var(--brand-soft);color:var(--brand);padding:2px 7px;border-radius:5px;font-weight:600;margin-left:6px;}
+
+/* ---------- dialog ---------- */
+dialog.dialog{
+  border:0;padding:0;border-radius:20px;max-width:560px;width:calc(100% - 32px);
+  background:var(--surface);box-shadow:0 24px 64px -16px rgba(22,33,28,.4);
+  color:var(--ink);
+}
+dialog.dialog::backdrop{background:rgba(22,33,28,.42);backdrop-filter:blur(2px);}
+.dialog-inner{padding:24px;position:relative;max-height:84vh;overflow-y:auto;}
+.dialog-close{
+  position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;
+  border:0;background:#F1EFE9;color:var(--ink-2);font-size:17px;cursor:pointer;line-height:1;
+  display:grid;place-items:center;
+}
+.dialog-close:hover{background:#E5E2D9;}
+.d-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;padding-right:36px;}
+.dialog-inner h2{font-size:20px;line-height:1.4;margin-bottom:14px;padding-right:30px;}
+.d-route{background:#FAF9F5;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:16px;}
+.d-route .row{display:flex;align-items:center;gap:9px;font-size:13.5px;}
+.d-route .row + .row{margin-top:9px;}
+.d-route .bar{width:1px;height:14px;background:var(--line);margin-left:3px;}
+.d-facts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 16px;}
+.d-facts div{background:#FAF9F5;border-radius:10px;padding:10px 12px;}
+.d-facts dt{font-size:11.5px;color:var(--ink-3);margin-bottom:2px;}
+.d-facts dd{margin:0;font-size:14px;font-weight:600;}
+.d-note{font-size:13px;color:var(--ink-2);background:var(--accent-soft);border-radius:10px;padding:11px 13px;margin-bottom:16px;line-height:1.6;}
+.d-publisher{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line);margin-bottom:16px;font-size:13px;}
+.d-publisher .who-name{font-weight:600;}
+.d-publisher .who-meta{font-size:11.5px;color:var(--ink-3);}
+.d-actions{display:flex;gap:10px;}
+.d-actions .btn{flex:1;}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;left:50%;bottom:32px;transform:translate(-50%,16px);
+  background:var(--ink);color:#fff;padding:11px 20px;border-radius:11px;font-size:13.5px;
+  box-shadow:0 12px 32px -8px rgba(22,33,28,.5);opacity:0;pointer-events:none;
+  transition:opacity .22s ease,transform .22s ease;z-index:80;max-width:calc(100% - 40px);
+}
+.toast.show{opacity:1;transform:translate(-50%,0);}
+
+footer.site{max-width:1200px;margin:0 auto;padding:0 24px 48px;font-size:12px;color:var(--ink-3);}
+
+/* ---------- responsive ---------- */
+@media (max-width:960px){
+  .square-layout,.publish-layout{grid-template-columns:1fr;}
+  .square-side{position:static;flex-direction:row;flex-wrap:wrap;}
+  .side-card{flex:1 1 240px;}
+}
+@media (max-width:720px){
+  .topbar-inner{height:auto;padding:10px 16px;flex-wrap:wrap;gap:8px;}
+  .brand-sub{display:none;}
+  .me-meta{display:none;}
+  .nav{order:3;width:100%;}
+  main{padding:20px 16px 64px;}
+  h1{font-size:23px;}
+  h2{font-size:20px;}
+  .page-head{gap:16px;margin-bottom:20px;}
+  .stat{padding:10px 14px;min-width:84px;}
+  .stat b{font-size:17px;}
+  .credit-hero{padding:22px;gap:20px;}
+  .score-num{font-size:44px;}
+  .two-col{grid-template-columns:1fr;}
+  .d-facts{grid-template-columns:1fr;}
+  .square-side{flex-direction:column;}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;transition-duration:.001ms !important;}
+}
+@media print{
+  .topbar,.filter-bar,.square-side,.actions,.form-foot,.btn,.tabs,.toast{display:none !important;}
+  body{background:#fff;}
+  .task-card,.order-card,.panel{break-inside:avoid;}
+  a[href^="http"]::after{content:" (" attr(href) ")";font-size:10px;color:#666;}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#view-square">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h9M9 7l5 5-5 5"/><circle cx="19" cy="12" r="2"/></svg>
+      </span>
+      <span class="brand-text">
+        <span class="brand-name">搭把手</span>
+        <span class="brand-sub">校园跑腿互助</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="主导航">
+      <button class="nav-btn is-active" data-view="square" type="button">任务广场</button>
+      <button class="nav-btn" data-view="publish" type="button">发布任务</button>
+      <button class="nav-btn" data-view="orders" type="button">我的任务</button>
+      <button class="nav-btn" data-view="credit" type="button">信用档案</button>
+      <button class="nav-btn" data-view="about" type="button">产品设计</button>
+    </nav>
+    <div class="me-pill">
+      <span class="avatar" aria-hidden="true">林</span>
+      <span class="me-meta"><b>林小满</b><i>信用 92 · 黄金</i></span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ 任务广场 ============ -->
+  <section class="view" id="view-square">
+    <div class="page-head">
+      <div>
+        <h1>校园跑腿互助平台</h1>
+        <p class="lede">同校同学之间互相搭把手：代取快递、代买餐食、代占座位。实名认证、双向评价、平台担保，平均 8 分钟有人接单。</p>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><b>37</b><span>进行中任务</span></div>
+        <div class="stat"><b>1,284</b><span>认证跑腿同学</span></div>
+        <div class="stat"><b>8 分钟</b><span>平均接单时长</span></div>
+      </div>
+    </div>
+
+    <div class="square-layout">
+      <div class="square-main">
+        <div class="filter-bar">
+          <div class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <label for="searchInput" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">搜索任务</label>
+            <input id="searchInput" type="search" placeholder="搜索任务、地点或关键词" autocomplete="off">
+          </div>
+          <div class="chips" id="typeChips" role="group" aria-label="按任务类型筛选">
+            <button class="chip is-active" data-type="all" type="button">全部</button>
+            <button class="chip" data-type="express" type="button">取快递</button>
+            <button class="chip" data-type="buy" type="button">代买</button>
+            <button class="chip" data-type="seat" type="button">占座</button>
+            <button class="chip" data-type="other" type="button">其他</button>
+          </div>
+          <select id="sortSelect" aria-label="排序方式">
+            <option value="new">最新发布</option>
+            <option value="pay">酬劳最高</option>
+            <option value="near">距离最近</option>
+          </select>
+        </div>
+
+        <div class="task-grid" id="taskGrid"></div>
+        <p class="empty" id="emptyState" hidden>没有符合条件的任务。换个关键词，或者点「发布任务」让同学来帮你。</p>
+      </div>
+
+      <aside class="square-side">
+        <div class="side-card">
+          <h3>本周跑腿榜</h3>
+          <div class="rank"><span class="rank-no top">1</span><span class="rank-name">陈同学 · 计算机学院</span><span class="rank-val">23 单</span></div>
+          <div class="rank"><span class="rank-no top">2</span><span class="rank-name">王同学 · 外国语学院</span><span class="rank-val">19 单</span></div>
+          <div class="rank"><span class="rank-no top">3</span><span class="rank-name">周同学 · 机械学院</span><span class="rank-val">17 单</span></div>
+          <div class="rank"><span class="rank-no">4</span><span class="rank-name">你 · 商学院</span><span class="rank-val">12 单</span></div>
+        </div>
+
+        <div class="side-card">
+          <h3>接单前先看这三点</h3>
+          <div class="side-note">
+            <ul>
+              <li>任务发布者已通过校园卡实名认证，身份可追溯</li>
+              <li>酬劳先托管在平台，确认完成后自动到账</li>
+              <li>超时未送达会影响信用分，接单前看好截止时间</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="side-card">
+          <h3>顺路也能赚</h3>
+          <p class="side-note" style="margin-bottom:12px;">从宿舍到教学楼的那段路，顺手带一单，5 分钟赚一杯咖啡钱。</p>
+          <button class="btn btn-primary btn-block" type="button" data-goto="publish">去发布一个需求</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ 发布任务 ============ -->
+  <section class="view" id="view-publish" hidden>
+    <div class="page-head">
+      <div>
+        <h2>发布跑腿任务</h2>
+        <p class="lede">填写取送地点、时间和酬劳，任务会推送给同校、同校区的认证跑腿者。平均 8 分钟内有人接单。</p>
+      </div>
+    </div>
+
+    <div class="publish-layout">
+      <form class="form-card" id="publishForm" novalidate>
+        <div class="field">
+          <span class="label">任务类型</span>
+          <div class="radio-chips">
+            <label><input type="radio" name="type" value="express" checked><span>取快递</span></label>
+            <label><input type="radio" name="type" value="buy"><span>代买</span></label>
+            <label><input type="radio" name="type" value="seat"><span>占座</span></label>
+            <label><input type="radio" name="type" value="other"><span>其他</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="fTitle">任务标题</label>
+          <input class="input" id="fTitle" name="title" type="text" maxlength="40" placeholder="例如：帮我取一下菜鸟驿站的快递" required>
+        </div>
+
+        <div class="field two-col">
+          <div>
+            <label class="label" for="fFrom">取件 / 起点</label>
+            <input class="input" id="fFrom" name="from" type="text" maxlength="30" placeholder="菜鸟驿站 B 区 3 号柜" required>
+          </div>
+          <div>
+            <label class="label" for="fTo">送达 / 终点</label>
+            <input class="input" id="fTo" name="to" type="text" maxlength="30" placeholder="梅园 6 栋 412" required>
+          </div>
+        </div>
+
+        <div class="field two-col">
+          <div>
+            <label class="label" for="fDeadline">期望送达时间</label>
+            <input class="input" id="fDeadline" name="deadline" type="text" maxlength="20" placeholder="今天 20:00 前" required>
+          </div>
+          <div>
+            <label class="label" for="fPay">酬劳 <span>元，建议 3–15 元</span></label>
+            <input class="input" id="fPay" name="pay" type="number" min="1" max="100" step="1" placeholder="5" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="fNote">补充说明 <span>可选</span></label>
+          <textarea class="textarea" id="fNote" name="note" maxlength="120" placeholder="例如：中号箱子有点沉，麻烦带个小推车；放宿舍门口即可"></textarea>
+        </div>
+
+        <div class="field">
+          <label class="check-line" for="fUrgent">
+            <input type="checkbox" id="fUrgent" name="urgent">
+            加急任务，愿意额外加价
+          </label>
+        </div>
+
+        <div class="form-foot">
+          <p class="form-hint">发布即代表同意《校园互助服务规则》，酬劳将在确认完成后结算。</p>
+          <button class="btn btn-primary" type="submit">发布任务</button>
+        </div>
+      </form>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="tip-card">
+          <h3>发布小贴士</h3>
+          <ol>
+            <li>标题写清「做什么」，比只写「帮个忙」接单快 3 倍</li>
+            <li>取送点写到楼栋和房间号，跑腿同学不用来回问</li>
+            <li>酬劳参考：小件快递 3–5 元，餐食代买 5–8 元，占座 8–12 元</li>
+            <li>贵重物品请当面交接，平台支持拍照留证</li>
+          </ol>
+        </div>
+        <div class="side-card">
+          <h3>费用怎么算</h3>
+          <div class="side-note">
+            <p>平台不向发布者收取服务费。跑腿同学拿到全部酬劳，平台仅从提现环节收取 1% 通道费，用于覆盖支付与担保成本。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 我的任务 ============ -->
+  <section class="view" id="view-orders" hidden>
+    <div class="page-head">
+      <div>
+        <h2>我的任务</h2>
+        <p class="lede">我发布的、我接下的，都在这里。状态一目了然，确认完成后酬劳自动结算。</p>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab is-active" data-tab="published" type="button" role="tab">我发布的 <span id="pubCount">0</span></button>
+      <button class="tab" data-tab="accepted" type="button" role="tab">我接的单 <span id="accCount">0</span></button>
+    </div>
+
+    <div class="order-list" id="ordersList"></div>
+    <p class="empty" id="ordersEmpty" hidden>这里还是空的。去任务广场看看有没有顺路的单子。</p>
+  </section>
+
+  <!-- ============ 信用档案 ============ -->
+  <section class="view" id="view-credit" hidden>
+    <div class="page-head">
+      <div>
+        <h2>信用档案</h2>
+        <p class="lede">信用分来自每一次真实的履约与评价，无法通过充值或刷单提升。它是这个平台最贵的东西。</p>
+      </div>
+    </div>
+
+    <div class="credit-hero">
+      <div>
+        <div class="credit-score">
+          <span class="score-num">92</span>
+          <span class="score-label">/ 100 信用分</span>
+        </div>
+        <span class="credit-level">黄金跑腿者 · 超过 87% 的同学</span>
+      </div>
+      <div class="credit-bar-wrap">
+        <div class="credit-bar-top"><span>黄金 80</span><span>铂金 95</span></div>
+        <div class="credit-bar"><i style="width:80%"></i></div>
+        <p class="credit-bar-hint">再完成 1 单五星好评，即可升到铂金，享受优先派单。</p>
+      </div>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric"><b>96%</b><span>任务完成率</span></div>
+      <div class="metric"><b>4.9</b><span>平均评分（近 30 单）</span></div>
+      <div class="metric"><b>98%</b><span>准时送达率</span></div>
+      <div class="metric"><b>42</b><span>累计完成单数</span></div>
+    </div>
+
+    <h3>勋章墙</h3>
+    <div class="medals">
+      <div class="medal">
+        <span class="medal-ico" style="background:var(--brand-soft)" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="#0F6B57" stroke-width="2"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.6 7.1 18.2l.9-5.5-4-3.9L9.5 8z"/></svg>
+        </span>
+        <div><b>初出茅庐</b><span>完成首单</span></div>
+      </div>
+      <div class="medal">
+        <span class="medal-ico" style="background:#FDF3E0" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="#C9922B" stroke-width="2"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>
+        </span>
+        <div><b>闪电侠</b><span>10 单全部准时</span></div>
+      </div>
+      <div class="medal">
+        <span class="medal-ico" style="background:#E8EFFE" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="#2F6FED" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20v-4"/></svg>
+        </span>
+        <div><b>五星好评</b><span>连续 20 单无差评</span></div>
+      </div>
+      <div class="medal">
+        <span class="medal-ico" style="background:#EFEAFC" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="#7C5CE0" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18M12 3c-3 3.5-3 14 0 18"/></svg>
+        </span>
+        <div><b>校园通</b><span>覆盖 4 个校区</span></div>
+      </div>
+      <div class="medal locked">
+        <span class="medal-ico" style="background:#EFEFEA" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="#8A938E" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
+        </span>
+        <div><b>老司机</b><span>完成 50 单解锁</span></div>
+      </div>
+      <div class="medal locked">
+        <span class="medal-ico" style="background:#EFEFEA" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="#8A938E" stroke-width="2"><path d="M12 3l7 4v6c0 4-3 6.5-7 8-4-1.5-7-4-7-8V7z"/></svg>
+        </span>
+        <div><b>零投诉</b><span>累计 100 单解锁</span></div>
+      </div>
+    </div>
+
+    <h3>最近收到的评价</h3>
+    <div class="reviews">
+      <div class="review">
+        <span class="avatar" style="background:#E8EFFE;color:#2F6FED" aria-hidden="true">王</span>
+        <div class="review-body">
+          <div class="review-top"><b>王同学</b><span class="score">★★★★★ 5.0</span><time datetime="2026-11-10">11 月 10 日</time></div>
+          <p>快递完好没压到，还帮我放到门口拍了照，比驿站还靠谱。</p>
+        </div>
+      </div>
+      <div class="review">
+        <span class="avatar" style="background:#FDEDE7;color:#EE6C4D" aria-hidden="true">陈</span>
+        <div class="review-body">
+          <div class="review-top"><b>陈同学</b><span class="score">★★★★★ 5.0</span><time datetime="2026-11-08">11 月 8 日</time></div>
+          <p>占到了靠窗的位置，还发了实时照片确认，非常省心。</p>
+        </div>
+      </div>
+      <div class="review">
+        <span class="avatar" style="background:#EFEAFC;color:#7C5CE0" aria-hidden="true">李</span>
+        <div class="review-body">
+          <div class="review-top"><b>李同学</b><span class="score">★★★★☆ 4.0</span><time datetime="2026-11-05">11 月 5 日</time></div>
+          <p>比约定时间晚了 10 分钟，但提前在消息里说了，可以理解。</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>信用分规则</h3>
+    <div class="table-wrap">
+      <table>
+        <caption>信用分初始 70 分，区间 0–100，每日结算一次。</caption>
+        <thead>
+          <tr><th scope="col">行为</th><th scope="col">分数变化</th><th scope="col">说明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>完成校园卡实名认证</td><td class="num plus">+20</td><td>仅首次认证计分</td></tr>
+          <tr><td>完成一单并获得五星好评</td><td class="num plus">+5</td><td>双向评价均生效</td></tr>
+          <tr><td>完成一单（未收到评价）</td><td class="num plus">+2</td><td>系统自动结算</td></tr>
+          <tr><td>超时未送达且未提前沟通</td><td class="num minus">−5</td><td>发布者可申诉</td></tr>
+          <tr><td>被投诉并经平台核实</td><td class="num minus">−10</td><td>三次累计暂停接单</td></tr>
+          <tr><td>信用分低于 60</td><td class="num">限制派单</td><td>需完成 3 单恢复</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 产品设计 ============ -->
+  <section class="view" id="view-about" hidden>
+    <div class="page-head">
+      <div>
+        <h2>产品设计说明</h2>
+        <p class="lede">这个页面写给评审看：为什么做、怎么做、靠什么建立信任、之后往哪走。</p>
+      </div>
+    </div>
+
+    <div class="about-sec">
+      <h3>一、真实存在的四个痛点</h3>
+      <div class="pain-grid">
+        <div class="pain">
+          <h4>快递点排队 20 分钟起</h4>
+          <p>下课时间和驿站高峰期完全重合，一个中号快递能吃掉半个午休。</p>
+          <span class="pain-sol">→ 顺路的同学代取，5 元换回 20 分钟</span>
+        </div>
+        <div class="pain">
+          <h4>群里喊话，喊完就沉底</h4>
+          <p>班群、楼栋群里发一条「谁帮我带个饭」，十分钟就被新消息刷走，成交全靠运气。</p>
+          <span class="pain-sol">→ 任务化发布，可检索、可筛选、可追踪</span>
+        </div>
+        <div class="pain">
+          <h4>陌生人交易没有信任基础</h4>
+          <p>让不认识的人拿自己的快递、进自己的宿舍楼，出问题没有追责路径。</p>
+          <span class="pain-sol">→ 校园卡实名 + 双向评价 + 平台担保</span>
+        </div>
+        <div class="pain">
+          <h4>想赚点零花钱，但没渠道</h4>
+          <p>学生的时间碎片化，兼职要整块时间通勤，跑腿恰好是「顺路 5 分钟」的活。</p>
+          <span class="pain-sol">→ 按单结算，一天顺路 3 单 ≈ 一顿饭钱</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-sec">
+      <h3>二、核心流程：六步闭环</h3>
+      <ol class="flow">
+        <li><span class="flow-num">1</span><b>发布</b><span class="flow-desc">选类型、填取送点与酬劳，1 分钟完成</span></li>
+        <li><span class="flow-num">2</span><b>匹配</b><span class="flow-desc">按校区、楼栋顺路度推送给附近同学</span></li>
+        <li><span class="flow-num">3</span><b>接单</b><span class="flow-desc">实名跑腿者接单，双方建立临时会话</span></li>
+        <li><span class="flow-num">4</span><b>履约</b><span class="flow-desc">取件与送达各拍一张照，进度实时同步</span></li>
+        <li><span class="flow-num">5</span><b>确认</b><span class="flow-desc">发布者确认完成，酬劳从托管账户结算</span></li>
+        <li><span class="flow-num">6</span><b>互评</b><span class="flow-desc">双向评价计入信用分，沉淀长期信任</span></li>
+      </ol>
+    </div>
+
+    <div class="about-sec">
+      <h3>三、信任机制：这个产品真正的护城河</h3>
+      <div class="mech-grid">
+        <div class="mech">
+          <span class="mech-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="#0F6B57" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M15 10h3M15 14h3M6 16h6"/></svg>
+          </span>
+          <div><b>校园卡实名认证</b><p>学号 + 校园卡照片人工审核，只对同校开放，校外无法注册。</p></div>
+        </div>
+        <div class="mech">
+          <span class="mech-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="#0F6B57" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+          </span>
+          <div><b>酬劳平台托管</b><p>发布时先冻结酬劳，确认完成后才打给跑腿者，避免赖账和跑单。</p></div>
+        </div>
+        <div class="mech">
+          <span class="mech-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="#0F6B57" stroke-width="2"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.6 7.1 18.2l.9-5.5-4-3.9L9.5 8z"/></svg>
+          </span>
+          <div><b>双向评价与信用分</b><p>发布者和跑腿者互相评分，只累积不重置，差评直接影响派单优先级。</p></div>
+        </div>
+        <div class="mech">
+          <span class="mech-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="#0F6B57" stroke-width="2"><path d="M12 21s-7-4.5-7-10a7 7 0 1114 0c0 5.5-7 10-7 10z"/><circle cx="12" cy="11" r="2.5"/></svg>
+          </span>
+          <div><b>全程留痕</b><p>取件、送达两次拍照打卡，时间地点自动记录，纠纷时作为判责依据。</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-sec">
+      <h3>四、产品结构与商业模式</h3>
+      <div class="two-panel">
+        <div class="panel">
+          <h4 style="margin-bottom:10px;">功能结构</h4>
+          <ul>
+            <li><b>任务广场</b>：按类型 / 校区 / 酬劳 / 距离筛选，卡片直接展示取送路线</li>
+            <li><b>发布任务</b>：四类模板，取送点、时间窗、酬劳、加急标记</li>
+            <li><b>我的任务</b>：发布与接单双视角，待接单 → 进行中 → 已完成状态流</li>
+            <li><b>信用档案</b>：信用分、等级、勋章、评价记录、规则透明可查</li>
+            <li><b>消息与通知</b>：接单提醒、超时预警、送达确认（后续迭代）</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h4 style="margin-bottom:10px;">怎么赚钱</h4>
+          <ul>
+            <li><b>提现通道费</b>：跑腿者提现收 1%，覆盖支付与担保成本，发布者免费</li>
+            <li><b>校园商家合作</b>：食堂、便利店、打印店入驻发单，按成交抽佣</li>
+            <li><b>加急服务费</b>：加急单平台收 1 元调度费</li>
+            <li><b>不做的</b>：不向学生收会员费、不做竞价排名，避免信用体系被钱污染</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-sec">
+      <h3>五、迭代路线</h3>
+      <div class="roadmap">
+        <div class="rm-item now">
+          <span class="rm-dot" aria-hidden="true"></span>
+          <div class="rm-body"><b>V1 任务广场与信用档案<span class="rm-tag">当前</span></b><span>跑通发布、接单、完成、评价的最小闭环，验证同校供需是否成立。</span></div>
+        </div>
+        <div class="rm-item">
+          <span class="rm-dot" aria-hidden="true"></span>
+          <div class="rm-body"><b>V2 顺路匹配</b><span>接入课表与常走路线，把「顺路单」推到最可能接的人面前，把接单时长压到 3 分钟内。</span></div>
+        </div>
+        <div class="rm-item">
+          <span class="rm-dot" aria-hidden="true"></span>
+          <div class="rm-body"><b>V3 信用分权益化</b><span>高信用用户享受优先派单、免押金、图书馆座位预约等校内权益，让信用真的值钱。</span></div>
+        </div>
+        <div class="rm-item">
+          <span class="rm-dot" aria-hidden="true"></span>
+          <div class="rm-body"><b>V4 多校区复制</b><span>把认证、结算、纠纷处理流程标准化，向同城高校复制，形成区域校园互助网络。</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <p>搭把手 · 校园跑腿互助平台 ｜ 产品原型演示，数据为模拟数据，仅用于展示产品结构与交互。</p>
+</footer>
+
+<dialog class="dialog" id="taskDialog" aria-labelledby="dialogTitle">
+  <div class="dialog-inner">
+    <button class="dialog-close" type="button" id="dialogClose" aria-label="关闭">✕</button>
+    <div id="dialogBody"></div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  'use strict';
+  try{
+    var STORAGE_KEY = 'dabashou_tasks_v1';
+
+    var TYPE_META = {
+      express: { label:'取快递', color:'#2F6FED', bg:'#E8EFFE' },
+      buy:     { label:'代买',   color:'#EE6C4D', bg:'#FDEDE7' },
+      seat:    { label:'占座',   color:'#7C5CE0', bg:'#EFEAFC' },
+      other:   { label:'其他',   color:'#4E7A6A', bg:'#E7F0EC' }
+    };
+
+    var AVATARS = ['#2F6FED','#EE6C4D','#7C5CE0','#0F6B57','#C9922B','#D9568C','#3A8FB7'];
+
+    var state = {
+      tasks: [],
+      type: 'all',
+      query: '',
+      sort: 'new',
+      ordersTab: 'published'
+    };
+
+    /* ---------------- utils ---------------- */
+    function esc(s){
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+        return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+      });
+    }
+    function $(sel, root){ return (root || document).querySelector(sel); }
+    function $all(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+
+    var toastTimer = null;
+    function toast(msg){
+      var el = $('#toast');
+      if(!el) return;
+      el.textContent = msg;
+      el.classList.add('show');
+      if(toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2600);
+    }
+
+    /* ---------------- data ---------------- */
+    function seed(){
+      var now = Date.now();
+      var raw = [
+        ['express','帮我取一下菜鸟驿站的快递','菜鸟驿站 B 区 3 号柜','梅园 6 栋 412',5,'今天 20:00 前','中号箱子有点沉，能带个小推车最好',false,'林小满','林','#0F6B57',92,240,true,'taken',false,6],
+        ['buy','一食堂二楼番茄牛腩饭','一食堂二楼','图书馆 4 楼自习区',8,'今天 12:30 前','一份番茄牛腩饭，不要香菜，多加饭',true,'王梓涵','王','#2F6FED',96,180,false,'open',false,14],
+        ['seat','图书馆五楼靠窗两个座位','图书馆 5 楼靠窗区','图书馆 5 楼靠窗区',10,'明天 07:30 前','两个连坐，占好后拍照发我',false,'陈嘉禾','陈','#EE6C4D',94,520,false,'open',false,42],
+        ['express','南门京东快递点取个小件','京东快递点（南门）','竹园 2 栋 201',4,'今天 18:00 前','一个小件，不重，顺路的同学帮个忙',false,'周牧野','周','#7C5CE0',88,760,false,'open',false,68],
+        ['other','去教务处代交纸质材料','行政楼 1 楼教务处','桃园 5 栋 305',12,'明天 17:00 前','需要盖章回执，记得让老师签收',false,'李知微','李','#C9922B',91,340,false,'open',false,31],
+        ['buy','罗森买杯冰美式和三明治','罗森便利店（东门）','实验楼 B 座 305',6,'今天 15:00 前','冰美式不加糖，三明治要金枪鱼的',true,'赵一诺','赵','#D9568C',95,120,false,'open',false,9],
+        ['express','顺丰驿站取生鲜，急','顺丰驿站（北门）','梅园 6 栋 412',7,'今天 21:00 前','生鲜要尽快，麻烦优先送',true,'孙嘉树','孙','#3A8FB7',93,95,false,'open',false,5],
+        ['seat','一教 302 占一个座位','一教 302 教室','一教 302 教室',8,'明天 08:00 前','上午有课，占一个靠后的位置就行',false,'吴桐','吴','#0F6B57',87,430,false,'open',false,26],
+        ['other','帮忙去校医院取体检报告','校医院 2 楼','竹园 2 栋 201',10,'今天 19:00 前','带身份证复印件，报告在二楼窗口取',false,'郑亦寒','郑','#2F6FED',90,610,false,'open',false,55],
+        ['buy','南门蜜雪两杯柠檬水','蜜雪冰城（南门）','图书馆 4 楼',3,'今天 16:00 前','两杯柠檬水，少冰，谢谢',false,'何思远','何','#EE6C4D',85,205,false,'open',false,17]
+      ];
+      return raw.map(function(r, i){
+        return {
+          id: 'seed-' + i,
+          type: r[0],
+          title: r[1],
+          from: r[2],
+          to: r[3],
+          pay: r[4],
+          deadline: r[5],
+          note: r[6],
+          urgent: r[7],
+          publisher: r[8],
+          initial: r[9],
+          avatar: r[10],
+          credit: r[11],
+          distance: r[12],
+          mine: r[13],
+          status: r[14],
+          takenByMe: r[15],
+          createdAt: now - r[16] * 60000
+        };
+      });
+    }
+
+    function load(){
+      try{
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if(raw){
+          var parsed = JSON.parse(raw);
+          if(parsed && Array.isArray(parsed.tasks) && parsed.tasks.length){
+            state.tasks = parsed.tasks;
+            return;
+          }
+        }
+      }catch(e){ /* 静默降级到 seed */ }
+      state.tasks = seed();
+    }
+
+    function save(){
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify({ tasks: state.tasks })); }catch(e){}
+    }
+
+    /* ---------------- render: square ---------------- */
+    function taskCardHTML(t){
+      var m = TYPE_META[t.type] || TYPE_META.other;
+      var badge = t.status === 'open'
+        ? '<span class="badge badge-open">待接单</span>'
+        : (t.status === 'taken' ? '<span class="badge badge-taken">进行中</span>' : '<span class="badge badge-done">已完成</span>');
+      return '' +
+        '<article class="task-card" data-id="' + esc(t.id) + '" tabindex="0" role="button" aria-label="查看任务：' + esc(t.title) + '">' +
+          '<div class="task-top">' +
+            '<span class="type-chip" style="color:' + m.color + ';background:' + m.bg + '">' + m.label + '</span>' +
+            (t.urgent ? '<span class="urgent">加急</span>' : '') +
+            badge +
+            '<span class="pay">¥' + esc(t.pay) + '</span>' +
+          '</div>' +
+          '<h3 class="task-title">' + esc(t.title) + '</h3>' +
+          '<div class="route">' +
+            '<span class="route-point"><i class="dot dot-a" aria-hidden="true"></i><span class="route-text">' + esc(t.from) + '</span></span>' +
+            '<svg class="route-arrow" viewBox="0 0 20 8" aria-hidden="true"><path d="M0 4h15M12 1l3 3-3 3"/></svg>' +
+            '<span class="route-point"><i class="dot dot-b" aria-hidden="true"></i><span class="route-text">' + esc(t.to) + '</span></span>' +
+          '</div>' +
+          '<div class="task-foot">' +
+            '<span class="who"><i class="avatar-sm" style="background:' + t.avatar + '" aria-hidden="true">' + esc(t.initial) + '</i>' + esc(t.publisher) + '</span>' +
+            '<span>信用 ' + esc(t.credit) + '</span>' +
+            '<span>' + esc(t.distance) + ' m</span>' +
+            '<span class="deadline">' + esc(t.deadline) + '</span>' +
+          '</div>' +
+        '</article>';
+    }
+
+    function renderTasks(){
+      var grid = $('#taskGrid');
+      var empty = $('#emptyState');
+      if(!grid) return;
+
+      var list = state.tasks.filter(function(t){
+        if(state.type !== 'all' && t.type !== state.type) return false;
+        if(state.query){
+          var hay = (t.title + ' ' + t.from + ' ' + t.to + ' ' + t.note + ' ' + t.publisher).toLowerCase();
+          if(hay.indexOf(state.query) === -1) return false;
+        }
+        return true;
+      });
+
+      if(state.sort === 'pay'){
+        list.sort(function(a,b){ return b.pay - a.pay; });
+      }else if(state.sort === 'near'){
+        list.sort(function(a,b){ return a.distance - b.distance; });
+      }else{
+        list.sort(function(a,b){ return b.createdAt - a.createdAt; });
+      }
+
+      if(!list.length){
+        grid.innerHTML = '';
+        if(empty) empty.hidden = false;
+        return;
+      }
+      if(empty) empty.hidden = true;
+      grid.innerHTML = list.map(taskCardHTML).join('');
+    }
+
+    /* ---------------- render: orders ---------------- */
+    function orderCardHTML(t, mode){
+      var m = TYPE_META[t.type] || TYPE_META.other;
+      var steps = '';
+      if(t.status === 'open'){
+        steps = '<div class="steps"><span class="step on"><i>1</i>待接单</span><span class="step-line"></span><span class="step"><i>2</i>进行中</span><span class="step-line"></span><span class="step"><i>3</i>已完成</span></div>';
+      }else if(t.status === 'taken'){
+        steps = '<div class="steps"><span class="step on"><i>1</i>待接单</span><span class="step-line"></span><span class="step on"><i>2</i>进行中</span><span class="step-line"></span><span class="step"><i>3</i>已完成</span></div>';
+      }else{
+        steps = '<div class="steps"><span class="step on"><i>1</i>待接单</span><span class="step-line"></span><span class="step on"><i>2</i>进行中</span><span class="step-line"></span><span class="step on"><i>3</i>已完成</span></div>';
+      }
+
+      var actions = '';
+      if(mode === 'accepted'){
+        if(t.status === 'taken'){
+          actions = '<div class="actions">' +
+            '<button class="btn btn-sm" type="button" data-action="msg" data-id="' + esc(t.id) + '">联系发布者</button>' +
+            '<button class="btn btn-sm btn-primary" type="button" data-action="done" data-id="' + esc(t.id) + '">标记送达</button>' +
+          '</div>';
+        }else if(t.status === 'open'){
+          actions = '<div class="actions"><span class="form-hint">等待接单</span></div>';
+        }else{
+          actions = '<div class="actions"><span class="form-hint">已完成</span></div>';
+        }
+      }else{
+        if(t.status === 'open'){
+          actions = '<div class="actions">' +
+            '<button class="btn btn-sm" type="button" data-action="msg" data-id="' + esc(t.id) + '">联系平台</button>' +
+            '<button class="btn btn-sm" type="button" data-action="cancel" data-id="' + esc(t.id) + '">取消任务</button>' +
+          '</div>';
+        }else if(t.status === 'taken'){
+          actions = '<div class="actions">' +
+            '<button class="btn btn-sm" type="button" data-action="msg" data-id="' + esc(t.id) + '">联系跑腿同学</button>' +
+            '<button class="btn btn-sm btn-primary" type="button" data-action="confirm" data-id="' + esc(t.id) + '">确认完成</button>' +
+          '</div>';
+        }else{
+          actions = '<div class="actions"><span class="form-hint">已结算</span></div>';
+        }
+      }
+
+      var whoLabel = mode === 'accepted' ? '发布者：' + t.publisher : '接单人：' + (t.status === 'open' ? '待匹配' : '陈嘉禾');
+
+      return '' +
+        '<div class="order-card">' +
+          '<div class="order-head">' +
+            '<span class="type-chip" style="color:' + m.color + ';background:' + m.bg + '">' + m.label + '</span>' +
+            (t.status === 'open' ? '<span class="badge badge-open">待接单</span>' : (t.status === 'taken' ? '<span class="badge badge-taken">进行中</span>' : '<span class="badge badge-done">已完成</span>')) +
+            '<span class="pay">¥' + esc(t.pay) + '</span>' +
+          '</div>' +
+          '<h3>' + esc(t.title) + '</h3>' +
+          '<div class="route">' +
+            '<span class="route-point"><i class="dot dot-a" aria-hidden="true"></i><span class="route-text">' + esc(t.from) + '</span></span>' +
+            '<svg class="route-arrow" viewBox="0 0 20 8" aria-hidden="true"><path d="M0 4h15M12 1l3 3-3 3"/></svg>' +
+            '<span class="route-point"><i class="dot dot-b" aria-hidden="true"></i><span class="route-text">' + esc(t.to) + '</span></span>' +
+          '</div>' +
+          steps +
+          '<div class="order-foot">' +
+            '<span class="who">' + esc(whoLabel) + ' · ' + esc(t.deadline) + '</span>' +
+            actions +
+          '</div>' +
+        '</div>';
+    }
+
+    function renderOrders(){
+      var list = $('#ordersList');
+      var empty = $('#ordersEmpty');
+      if(!list) return;
+
+      var published = state.tasks.filter(function(t){ return t.mine; });
+      var accepted = state.tasks.filter(function(t){ return t.takenByMe; });
+
+      var pubCount = $('#pubCount');
+      var accCount = $('#accCount');
+      if(pubCount) pubCount.textContent = published.length;
+      if(accCount) accCount.textContent = accepted.length;
+
+      var data = state.ordersTab === 'accepted' ? accepted : published;
+      if(!data.length){
+        list.innerHTML = '';
+        if(empty){
+          empty.hidden = false;
+          empty.textContent = state.ordersTab === 'accepted'
+            ? '你还没有接过单。去任务广场看看，顺路的单子顺手就能赚。'
+            : '你还没有发布过任务。点「发布任务」，1 分钟就能挂出去。';
+        }
+        return;
+      }
+      if(empty) empty.hidden = true;
+      list.innerHTML = data.map(function(t){ return orderCardHTML(t, state.ordersTab); }).join('');
+    }
+
+    /* ---------------- dialog ---------------- */
+    function openTask(id){
+      var t = state.tasks.filter(function(x){ return x.id === id; })[0];
+      if(!t) return;
+      var m = TYPE_META[t.type] || TYPE_META.other;
+      var body = $('#dialogBody');
+      var dialog = $('#taskDialog');
+      if(!body || !dialog) return;
+
+      var canTake = (t.status === 'open' && !t.mine);
+      var actionHTML;
+      if(canTake){
+        actionHTML = '<button class="btn btn-primary" type="button" data-take="' + esc(t.id) + '">接单跑腿</button>';
+      }else if(t.mine){
+        actionHTML = '<button class="btn" type="button" disabled>这是你发布的任务</button>';
+      }else if(t.status === 'taken'){
+        actionHTML = '<button class="btn" type="button" disabled>已被其他同学接单</button>';
+      }else{
+        actionHTML = '<button class="btn" type="button" disabled>任务已完成</button>';
+      }
+
+      body.innerHTML = '' +
+        '<div class="d-head">' +
+          '<span class="type-chip" style="color:' + m.color + ';background:' + m.bg + '">' + m.label + '</span>' +
+          (t.urgent ? '<span class="urgent">加急</span>' : '') +
+          (t.status === 'open' ? '<span class="badge badge-open">待接单</span>' : (t.status === 'taken' ? '<span class="badge badge-taken">进行中</span>' : '<span class="badge badge-done">已完成</span>')) +
+        '</div>' +
+        '<h2 id="dialogTitle">' + esc(t.title) + '</h2>' +
+        '<div class="d-route">' +
+          '<div class="row"><i class="dot dot-a" aria-hidden="true"></i><span>' + esc(t.from) + '</span></div>' +
+          '<div class="bar" aria-hidden="true"></div>' +
+          '<div class="row"><i class="dot dot-b" aria-hidden="true"></i><span>' + esc(t.to) + '</span></div>' +
+        '</div>' +
+        '<dl class="d-facts">' +
+          '<div><dt>酬劳</dt><dd>¥' + esc(t.pay) + '</dd></div>' +
+          '<div><dt>截止时间</dt><dd>' + esc(t.deadline) + '</dd></div>' +
+          '<div><dt>距离</dt><dd>' + esc(t.distance) + ' m</dd></div>' +
+          '<div><dt>发布时长</dt><dd>' + esc(Math.max(1, Math.round((Date.now() - t.createdAt) / 60000))) + ' 分钟前</dd></div>' +
+        '</dl>' +
+        (t.note ? '<div class="d-note">备注：' + esc(t.note) + '</div>' : '') +
+        '<div class="d-publisher">' +
+          '<i class="avatar-sm" style="background:' + t.avatar + ';width:30px;height:30px;font-size:12px" aria-hidden="true">' + esc(t.initial) + '</i>' +
+          '<div><div class="who-name">' + esc(t.publisher) + '</div><div class="who-meta">信用 ' + esc(t.credit) + ' · 已完成 ' + (20 + t.pay) + ' 单 · 已实名认证</div></div>' +
+        '</div>' +
+        '<div class="d-actions">' + actionHTML + '</div>';
+
+      try{ dialog.showModal(); }catch(e){ dialog.setAttribute('open',''); }
+
+      var takeBtn = $('[data-take]', body);
+      if(takeBtn){
+        takeBtn.addEventListener('click', function(){ takeTask(t.id); });
+      }
+    }
+
+    function takeTask(id){
+      var t = state.tasks.filter(function(x){ return x.id === id; })[0];
+      if(!t || t.status !== 'open') return;
+      t.status = 'taken';
+      t.takenByMe = true;
+      save();
+      renderAll();
+      var dialog = $('#taskDialog');
+      if(dialog && dialog.open) dialog.close();
+      toast('接单成功，记得在「' + t.deadline + '」前送达');
+    }
+
+    /* ---------------- views ---------------- */
+    function switchView(name){
+      $all('.view').forEach(function(v){ v.hidden = (v.id !== 'view-' + name); });
+      $all('.nav-btn').forEach(function(b){
+        b.classList.toggle('is-active', b.getAttribute('data-view') === name);
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setOrdersTab(tab){
+      state.ordersTab = tab;
+      $all('.tab').forEach(function(b){
+        b.classList.toggle('is-active', b.getAttribute('data-tab') === tab);
+      });
+      renderOrders();
+    }
+
+    function renderAll(){
+      renderTasks();
+      renderOrders();
+    }
+
+    /* ---------------- events ---------------- */
+    function bind(){
+      // nav
+      $all('.nav-btn').forEach(function(btn){
+        btn.addEventListener('click', function(){ switchView(btn.getAttribute('data-view')); });
+      });
+      $all('[data-goto]').forEach(function(btn){
+        btn.addEventListener('click', function(){ switchView(btn.getAttribute('data-goto')); });
+      });
+
+      // type chips
+      var chips = $('#typeChips');
+      if(chips){
+        chips.addEventListener('click', function(e){
+          var b = e.target.closest('.chip');
+          if(!b) return;
+          state.type = b.getAttribute('data-type');
+          $all('.chip', chips).forEach(function(c){ c.classList.toggle('is-active', c === b); });
+          renderTasks();
+        });
+      }
+
+      // search
+      var search = $('#searchInput');
+      if(search){
+        search.addEventListener('input', function(){
+          state.query = search.value.trim().toLowerCase();
+          renderTasks();
+        });
+      }
+
+      // sort
+      var sort = $('#sortSelect');
+      if(sort){
+        sort.addEventListener('change', function(){
+          state.sort = sort.value;
+          renderTasks();
+        });
+      }
+
+      // task grid click / keyboard
+      var grid = $('#taskGrid');
+      if(grid){
+        grid.addEventListener('click', function(e){
+          var card = e.target.closest('.task-card');
+          if(card) openTask(card.getAttribute('data-id'));
+        });
+        grid.addEventListener('keydown', function(e){
+          if(e.key === 'Enter' || e.key === ' '){
+            var card = e.target.closest('.task-card');
+            if(card){ e.preventDefault(); openTask(card.getAttribute('data-id')); }
+          }
+        });
+      }
+
+      // dialog close
+      var closeBtn = $('#dialogClose');
+      if(closeBtn){
+        closeBtn.addEventListener('click', function(){
+          var d = $('#taskDialog');
+          if(d) d.close();
+        });
+      }
+
+      // publish form
+      var form = $('#publishForm');
+      if(form){
+        form.addEventListener('submit', function(e){
+          e.preventDefault();
+          var fd = new FormData(form);
+          var title = String(fd.get('title') || '').trim();
+          var from = String(fd.get('from') || '').trim();
+          var to = String(fd.get('to') || '').trim();
+          var deadline = String(fd.get('deadline') || '').trim();
+          var pay = Number(fd.get('pay'));
+          var note = String(fd.get('note') || '').trim();
+          var type = String(fd.get('type') || 'express');
+          var urgent = fd.get('urgent') === 'on';
+
+          if(!title || !from || !to || !deadline || !pay || pay < 1){
+            toast('还有必填项没填完，检查一下标题、地点、时间和酬劳');
+            return;
+          }
+
+          var task = {
+            id: 'u' + Date.now(),
+            type: type,
+            title: title,
+            from: from,
+            to: to,
+            pay: pay,
+            deadline: deadline,
+            note: note,
+            urgent: urgent,
+            publisher: '林小满',
+            initial: '林',
+            avatar: '#0F6B57',
+            credit: 92,
+            distance: Math.round(80 + Math.random() * 400),
+            mine: true,
+            status: 'open',
+            takenByMe: false,
+            createdAt: Date.now()
+          };
+
+          state.tasks.unshift(task);
+          save();
+          renderAll();
+          form.reset();
+          switchView('square');
+          state.type = 'all';
+          state.query = '';
+          var s = $('#searchInput'); if(s) s.value = '';
+          var sc = $('#typeChips');
+          if(sc) $all('.chip', sc).forEach(function(c, i){ c.classList.toggle('is-active', i === 0); });
+          renderTasks();
+          toast('任务已发布，正在推送给同校区的跑腿同学');
+        });
+      }
+
+      // tabs
+      $all('.tab').forEach(function(b){
+        b.addEventListener('click', function(){ setOrdersTab(b.getAttribute('data-tab')); });
+      });
+
+      // order actions (delegated)
+      var ordersList = $('#ordersList');
+      if(ordersList){
+        ordersList.addEventListener('click', function(e){
+          var btn = e.target.closest('[data-action]');
+          if(!btn) return;
+          var action = btn.getAttribute('data-action');
+          var id = btn.getAttribute('data-id');
+          var t = state.tasks.filter(function(x){ return x.id === id; })[0];
+          if(!t) return;
+
+          if(action === 'done'){
+            t.status = 'done';
+            save(); renderAll();
+            toast('已标记送达，等待发布者确认');
+          }else if(action === 'confirm'){
+            t.status = 'done';
+            save(); renderAll();
+            toast('已确认完成，酬劳已结算给对方，信用分 +2');
+          }else if(action === 'cancel'){
+            state.tasks = state.tasks.filter(function(x){ return x.id !== id; });
+            save(); renderAll();
+            toast('任务已取消，冻结的酬劳将原路退回');
+          }else if(action === 'msg'){
+            toast('已打开临时会话（演示环境不发送真实消息）');
+          }
+        });
+      }
+
+      // brand anchor
+      var brand = $('.brand');
+      if(brand){
+        brand.addEventListener('click', function(e){
+          e.preventDefault();
+          switchView('square');
+        });
+      }
+    }
+
+    /* ---------------- init ---------------- */
+    load();
+    bind();
+    renderAll();
+
+  }catch(err){
+    if(window.console && console.error) console.error('[搭把手] 初始化失败', err);
+  }
+})();
+</script>
+</body>
+</html>
